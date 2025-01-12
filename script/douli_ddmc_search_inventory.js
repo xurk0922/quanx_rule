@@ -3,6 +3,8 @@
  * @fileoverview Template to compose HTTP reqeuest.
  * 
  * 兜礼叮咚买菜代金券库存查询
+ * 
+ * 2025/01/12 加强对请求失败的处理防止JS阻塞；增加更多的日志用于排查问题
  */
 
 const token = "20d5fd089e78aa63225cb8326db3eb0f";
@@ -41,17 +43,18 @@ const myRequest = {
 };
 
 $task.fetch(myRequest).then(response => {
-    // console.log(response.statusCode + "\n\n" + response.body);
     let statusCode = response.statusCode;
     if ( statusCode / 100 == 2) {
-        console.log(response.body);
-
-        if (response.body.code == "1000") {
+        if (JSON.parse(response.body).code === "1000") {
             const inventory = JSON.parse(response.body).data.skuList[0].inventory;
             if (inventory > 0) {
                 $notify("兜礼叮咚买菜卡券", "有库存", `剩余: ${inventory} 件`);
             }
+        } else {
+            console.log(response.body);
         }
+    } else {
+        console.log(JSON.parse(response));
     }
 
     $done();
