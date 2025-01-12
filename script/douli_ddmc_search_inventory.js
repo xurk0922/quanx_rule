@@ -5,7 +5,13 @@
  * 兜礼叮咚买菜代金券库存查询
  */
 
-const url = `https://api.doooly.com/pro_doooly/jersey/selfProduct/detail?timestamp=1705931040032`;
+const token = "20d5fd089e78aa63225cb8326db3eb0f";
+const timestamp = new Date().getTime()
+
+const url = `https://api.doooly.com/pro_doooly/jersey/selfProduct/detail?timestamp=${timestamp}`;
+
+console.log(`请求地址：${url}`)
+
 const method = `POST`;
 const headers = {
 'Connection' : `keep-alive`,
@@ -15,7 +21,7 @@ const headers = {
 'thirdPartyChannel' : `dahua`,
 'Origin' : `https://reach-life.com`,
 'User-Agent' : `Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148`,
-'token' : `b7513171b73f9e85ea41413cd42d075a`,
+'token' : `${token}`,
 'Host' : `api.doooly.com`,
 'Referer' : `https://reach-life.com/`,
 'groupId' : `542`,
@@ -23,6 +29,8 @@ const headers = {
 'Accept' : `application/json, text/plain, */*`
 };
 const body = `{"productId":"1124","activityName":"","userId":"1063390"}`;
+
+console.log(`请求内容：${body}`);
 
 const myRequest = {
     url: url,
@@ -34,12 +42,17 @@ const myRequest = {
 
 $task.fetch(myRequest).then(response => {
     // console.log(response.statusCode + "\n\n" + response.body);
-    // console.log(typeof response.body);
-    const inventory = JSON.parse(response.body).data.skuList[0].inventory;
-    if (inventory > 0) {
-        $notify("兜礼叮咚买菜卡券", "有库存", `剩余: ${inventory} 件`);
+    let statusCode = response.statusCode;
+    if ( statusCode / 100 == 2) {
+        console.log(response.body);
+
+        if (response.body.code == "1000") {
+            const inventory = JSON.parse(response.body).data.skuList[0].inventory;
+            if (inventory > 0) {
+                $notify("兜礼叮咚买菜卡券", "有库存", `剩余: ${inventory} 件`);
+            }
+        }
     }
-    
 
     $done();
 }, reason => {
