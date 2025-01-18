@@ -27,30 +27,15 @@ if (typeof $request !== "undefined") {
     $done({ body: JSON.parse($response.body) });
 } else {
     // 获取保存的 cookie
-    const headersValueString = $prefs.valueForKey(key);
-    const headersValue = JSON.parse(headersValueString);
+    const value = $prefs.valueForKey(key);
 
-    if (headersValue) {
+    if (value) {
         const timestamp = new Date().getTime();
         const url = `https://api.doooly.com/pro_doooly/jersey/selfProduct/detail?timestamp=${timestamp}`;
         const method = `POST`;
         const body = `{"productId":"1124","activityName":"","userId":"1063390"}`;
-        const headers = {
-            'Connection' : `keep-alive`,
-            'Accept-Encoding' : `gzip, deflate, br`,
-            'channel' : `h5`,
-            'Content-Type' : `application/json;charset=utf-8`,
-            'thirdPartyChannel' : `dahua`,
-            'Origin' : `https://reach-life.com`,
-            'User-Agent' : `${headersValue["User-Agent"]}`,
-            'token' : `${headersValue["token"]}`,
-            'Host' : `api.doooly.com`,
-            'Referer' : `https://reach-life.com/`,
-            'groupId' : `${headersValue["groupId"]}`,
-            'Accept-Language' : `zh-CN,zh-Hans;q=0.9`,
-            'Accept' : `application/json, text/plain, */*`
-            };
-
+        const headers = JSON.parse(value);
+        
         const myRequest = {
             url: url,
             method: method,
